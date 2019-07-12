@@ -10,6 +10,16 @@ from albumentations.core.transforms_interface import to_tuple, DualTransform
 
 
 def F_rotate(img, angle, interpolation=cv2.INTER_LINEAR, border_mode=cv2.BORDER_CONSTANT, value=None, is_padding=False):
+    """
+    修改的Rotate函数，使其padding
+    :param img:
+    :param angle:
+    :param interpolation:
+    :param border_mode:
+    :param value:
+    :param is_padding:
+    :return:
+    """
     if is_padding:
         h0, w0 = img.shape[:2]
         height = w0 * math.sin(angle * math.pi / 180) + h0 * math.cos(angle * math.pi / 180)
@@ -26,7 +36,7 @@ def F_rotate(img, angle, interpolation=cv2.INTER_LINEAR, border_mode=cv2.BORDER_
 
 class Rotate(DualTransform):
     """Rotate the input by an angle selected randomly from the uniform distribution.
-
+    重写的Rotate，使其padding
     Args:
         limit ((int, int) or int): range from which a random angle is picked. If limit is a single int
             an angle is picked from (-limit, limit). Default: 90
@@ -83,6 +93,14 @@ def keypoint_affine(keypoint, param, rows, cols, **params):
 
 
 def affine(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, border_mode=cv2.BORDER_CONSTANT):
+    """
+    输入参数为像素的偏移量，为正整数
+    :param img:
+    :param param:
+    :param interpolation:
+    :param border_mode:
+    :return:
+    """
     h0, w0 = img.shape[:2]
     center_square = np.float32((h0, w0)) // 2
     square_size = min((h0, w0)) // 3
@@ -109,6 +127,7 @@ def affine(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, border
 
 
 def affine_new(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, border_mode=cv2.BORDER_CONSTANT):
+    """输入参数为像素的偏移量，为正整数"""
     h0, w0 = img.shape[:2]
     pts = np.float32([
         [0, 0],
@@ -131,8 +150,10 @@ def affine_new(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, bo
                          flags=interpolation, borderMode=border_mode)
     return img
 
+
 class AffineTransform(DualTransform):
     """
+    调用affine_new，改变输入方式，输入的六个参数控制边角点的变换。输入为六个整数。
     实行仿射变换，由于不知仿射变换的极坐标表示，因此目前先返回为零
     """
 
@@ -211,7 +232,7 @@ if __name__ == '__main__':
     # plt.figure()
     # plt.imshow(mask)
     # plt.show()
-    img_, msk_ = Affine(img, mask, [32, 60, 230, 72, 133, 31])
+    img_, msk_ = Affine(img, mask, [-32, 60, 230, -72, 500, 31])
     # img_ = F_affine(img, [0.1, 0.1, 1, 0.2, 0.2, 1])
     # img_, msk_ = Rotate45(img, mask)
     plt.figure()

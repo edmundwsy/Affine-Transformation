@@ -75,6 +75,7 @@ def grid(img, num_steps_hori=3, num_steps_verti=3):
     for idy in range(len(yy) - 1):
         for idx in range(len(xx) - 1):
             mask[yy[idy]: yy[idy+1], xx[idx]:xx[idx+1]] = idx + idy * num_steps_hori + 1
+            # 这里+1防止padding和编号为0的mask重合
             # img_list.append(img[yy[idy]: yy[idy+1], xx[idx]:xx[idx+1]])
     return mask
 
