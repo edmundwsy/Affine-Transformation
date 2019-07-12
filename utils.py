@@ -89,12 +89,7 @@ def keypoint_affine(keypoint, param, rows, cols, **params):
     matrix = cv2.getAffineTransform(pts, dst)
     x, y, a, s = keypoint
     x, y = cv2.transform(np.array([[[x, y]]]), matrix).squeeze()
-    x1 = s * math.cos(a)
-    y1 = s * math.sin(a)
-    x2, y2 = cv2.transform(np.array([[[x1, y1]]]), matrix).squeeze()
-    s_ = math.sqrt(x2 ** 2 + y2 ** 2)
-    a_ = math.atan2(y2, x2)
-    return [x, y, a_, s_]
+    return [x, y, 0, 0]
 
 
 def affine(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, border_mode=cv2.BORDER_CONSTANT):
@@ -205,27 +200,27 @@ def vertical_flip(img, msk):
 
 
 def rotate45(img, msk):
-    aug = A.Compose([A.Rotate(limit=(45, 45), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
+    aug = A.Compose([Rotate(limit=(45, 45), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
 
 
 def rotate30(img, msk):
-    aug = A.Compose([A.Rotate(limit=(30, 30), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
+    aug = A.Compose([Rotate(limit=(30, 30), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
 
 
 def rotate60(img, msk):
-    aug = A.Compose([A.Rotate(limit=(60, 60), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
+    aug = A.Compose([Rotate(limit=(60, 60), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
 
 
-def affine_transform(img, msk, points=[], param=[0,0,0,0,0,0]):
+def affine(img, msk, param):
     aug = A.Compose([AffineTransform(param=param, border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
-    data = aug(image=img, mask=msk, point=points)
-    return data['image'], data['mask'], data['point']
+    data = aug(image=img, mask=msk)
+    return data['image'], data['mask']
 
 
 def color_transform(img, msk):
@@ -253,7 +248,7 @@ def hue_saturation_value(img, msk):
 
 
 if __name__ == '__main__':
-    path = "/home/edmund/projects/pics/1531053735.jpg"
+    path = "IMG_319.jpg"
     img = cv2.imread(path)
     mask = grid(img)
     # plt.figure()
@@ -261,14 +256,11 @@ if __name__ == '__main__':
     # plt.figure()
     # plt.imshow(mask)
     # plt.show()
-    # img_, msk_ = affine_transform(img, mask, [-32, 60, 230, -72, 500, 31])
+    # img_, msk_ = Affine(img, mask, [-32, 60, 230, -72, 500, 31])
     # img_, msk_ = affine(img, mask, [-0.01, 0.01, 0.1, -0.01, 0.01, 0.01])
+    img_, msk_ = rotate30(img, mask)
     # img_ = F_affine(img, [0.1, 0.1, 1, 0.2, 0.2, 1])
     # img_, msk_ = Rotate45(img, mask)
-    img_, msk_ = hue_saturation_value(img, mask)
-    plt.figure()
-    plt.imshow(img_)
-    # plt.imshow(cv2.cvtColor(img_, cv2.COLOR_RGB2BGR))
-    plt.figure()
-    plt.imshow(msk_)
-    plt.show()
+    cv2.imshow('img_', img_)
+    cv2.imshow('img', img)
+    cv2.waitKey()
