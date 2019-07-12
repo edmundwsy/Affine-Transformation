@@ -208,8 +208,8 @@ def rotate45(img, msk):
     return data['image'], data['mask']
 
 
-def rotate30(img, msk):
-    aug = A.Compose([Rotate(limit=(30, 30), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
+def rotate15(img, msk):
+    aug = A.Compose([Rotate(limit=(15, 15), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
 
@@ -220,7 +220,7 @@ def rotate60(img, msk):
     return data['image'], data['mask']
 
 
-def affine_transform(img, msk, param):
+def affine_transform(img, msk, param=[]):
     if param == []:
         param = 0.1 * np.random.randn(6)
     aug = A.Compose([AffineTransform(param=param, border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
@@ -293,6 +293,11 @@ def sun_flare(img, msk):
     aug = A.Compose([A.RandomSunFlare(always_apply=True, src_radius=100)])
     data = aug(image=img)
     return data['image'], msk
+
+
+def random_whether(img, msk):
+    whether = np.random.choice([snow, rain, shadow, sun_flare])
+    return whether(img, msk)
 
 
 if __name__ == '__main__':

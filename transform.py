@@ -3,6 +3,10 @@
 # @File     : transform.py
 # @Software : PyCharm
 import numpy as np
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from transformation.utils import *
 
 
 class Transform(object):
@@ -40,3 +44,10 @@ class Transform(object):
         for aug in applied_aug_list:
             image, mask = self.do_aug(aug, image, mask)
         return image, mask
+
+
+def random_transform(image, mask):
+    aug_list = [random_whether, random_gamma, blur, random_brightness, hue_saturation_value, rgb_shift, clahe,
+                       color_transform, affine_transform, rotate15, vertical_flip, horizontal_flip]
+    trans = Transform(aug_list, iter_time=5)
+    return trans.random_aug(image, mask)
