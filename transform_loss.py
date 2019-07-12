@@ -4,13 +4,13 @@
 # @Software : PyCharm
 from torch.nn.modules import Module
 import numpy as np
+import torch
 
 
-class AffineLoss(Module):
+class TransformLoss(Module):
     def __init__(self, use_fg, device):
-        super(AffineLoss, self).__init__()
+        super(TransformLoss, self).__init__()
         self.device = device
-        self.use_fg = use_fg
 
     def forward(self, origin_density, origin_mask, pre_density, new_mask):
         """
@@ -27,5 +27,5 @@ class AffineLoss(Module):
         for i in range(pre_density):
             for j in range(pre_density[0]):
                 new_count[origin_mask[i, j]] += pre_density[i, j]
-        affine_loss = np.sum(abs(new_count - origin_count))
+        affine_loss = torch.sum(torch.abs(new_count - origin_count)).to(self.device)
         return affine_loss
