@@ -127,7 +127,7 @@ def affine(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, border
 
 
 def affine_new(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, border_mode=cv2.BORDER_CONSTANT):
-    """输入参数为像素的偏移量，为正整数"""
+    """输入参数为像素的偏移量，为0~1之间的数"""
     h0, w0 = img.shape[:2]
     pts = np.float32([
         [0, 0],
@@ -135,9 +135,9 @@ def affine_new(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, bo
         [0, h0 - 1]
     ])
     dts = pts + np.float32([
-        [param[0], param[1]],
-        [param[2], param[3]],
-        [param[4], param[5]]
+        [w0 * param[0], h0 * param[1]],
+        [w0 * param[2], h0 * param[3]],
+        [w0 * param[4], h0 * param[5]]
     ])
     w_min = min(dts[:, 0])
     h_min = min(dts[:, 1])
@@ -153,7 +153,8 @@ def affine_new(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, bo
 
 class AffineTransform(DualTransform):
     """
-    调用affine_new，改变输入方式，输入的六个参数控制边角点的变换。输入为六个整数。
+    调用affine_new，改变输入方式，输入的六个参数控制边角点的变换。输入为六个float。
+    前两个参数控制左上点的偏移比例，中间控制右上点的偏移比例，最后两个参数控制左下点的偏移比例
     实行仿射变换，由于不知仿射变换的极坐标表示，因此目前先返回为零
     """
 
@@ -165,7 +166,7 @@ class AffineTransform(DualTransform):
         # self.value = value
         self.param = param
 
-    def apply(self, img, param=[0, 0, 1, 0, 0, 1], interpolation=cv2.INTER_LINEAR, **params):
+    def apply(self, img, param, interpolation=cv2.INTER_LINEAR, **params):
         return affine_new(img, self.param, self.interpolation, self.border_mode)
 
     def get_params(self):
@@ -218,6 +219,8 @@ def rotate60(img, msk):
 
 
 def affine(img, msk, param):
+    if param == []:
+        param = 0.1 * np.random.randn(6)
     aug = A.Compose([AffineTransform(param=param, border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
@@ -301,15 +304,14 @@ if __name__ == '__main__':
     # plt.figure()
     # plt.imshow(mask)
     # plt.show()
-    # img_, msk_ = Affine(img, mask, [-32, 60, 230, -72, 500, 31])
-    # img_, msk_ = affine(img, mask, [-0.01, 0.01, 0.1, -0.01, 0.01, 0.01])
-    img_, msk_ = shadow(img, mask)
-    plt.figure()
-    plt.imshow(cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+    img_, msk_ = affine(img, mask, [])
+    # img_, msk_ = affine(img, mask)
+    # plt.figure()
+    # plt.imshow(cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
     plt.figure()
     plt.imshow(cv2.cvtColor(img_, cv2.COLOR_RGB2BGR))
     plt.figure()
-    plt.imshow(mask)
+    plt.imshow(msk_)
     plt.show()
     # img_ = F_affine(img, [0.1, 0.1, 1, 0.2, 0.2, 1])
     # img_, msk_ = Rotate45(img, mask)
