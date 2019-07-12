@@ -108,6 +108,29 @@ def affine(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, border
     return img
 
 
+def affine_new(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, border_mode=cv2.BORDER_CONSTANT):
+    h0, w0 = img.shape[:2]
+    pts = np.float32([
+        [0, 0],
+        [w0 - 1, 0],
+        [0, h0 - 1]
+    ])
+    dts = pts + np.float32([
+        [param[0], param[1]],
+        [param[2], param[3]],
+        [param[4], param[5]]
+    ])
+    w_min = min(dts[:, 0])
+    h_min = min(dts[:, 1])
+    dts[:, 0] -= w_min
+    dts[:, 1] -= h_min
+    width = dts[1][0] + dts[2][0]
+    height = dts[1][1] + dts[2][1]
+    matrix = cv2.getAffineTransform(pts, dts)
+    img = cv2.warpAffine(img, matrix, (int(width), int(height)),
+                         flags=interpolation, borderMode=border_mode)
+    return img
+
 class AffineTransform(DualTransform):
     """
     实行仿射变换，由于不知仿射变换的极坐标表示，因此目前先返回为零
@@ -122,7 +145,7 @@ class AffineTransform(DualTransform):
         self.param = param
 
     def apply(self, img, param=[0, 0, 1, 0, 0, 1], interpolation=cv2.INTER_LINEAR, **params):
-        return affine(img, self.param, self.interpolation, self.border_mode)
+        return affine_new(img, self.param, self.interpolation, self.border_mode)
 
     def get_params(self):
         return {'param': self.param}
@@ -188,9 +211,9 @@ if __name__ == '__main__':
     # plt.figure()
     # plt.imshow(mask)
     # plt.show()
-    # img_, msk_ = Affine(img, mask, [-0.01, 0.01, 0.1, -0.01, 0.01, 0.01])
+    img_, msk_ = Affine(img, mask, [32, 60, 230, 72, 133, 31])
     # img_ = F_affine(img, [0.1, 0.1, 1, 0.2, 0.2, 1])
-    img_, msk_ = Rotate45(img, mask)
+    # img_, msk_ = Rotate45(img, mask)
     plt.figure()
     plt.imshow(img_)
     # plt.imshow(cv2.cvtColor(img_, cv2.COLOR_RGB2BGR))
