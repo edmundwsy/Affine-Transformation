@@ -182,42 +182,43 @@ class AffineTransform(DualTransform):
 
 
 def Random_crop(img, msk, height=512, width=512):
+def random_crop(img, msk, height=512, width=512):
     aug = A.Compose([A.RandomCrop(height=height, width=width)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
 
 
-def Horizontal_flip(img, msk):
+def horizontal_flip(img, msk):
     aug = A.Compose([A.HorizontalFlip(always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
 
 
-def Vertical_flip(img, msk):
+def vertical_flip(img, msk):
     aug = A.Compose([A.VerticalFlip(always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
 
 
-def Rotate45(img, msk):
-    aug = A.Compose([Rotate(limit=(45, 45), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
+def rotate45(img, msk):
+    aug = A.Compose([A.Rotate(limit=(45, 45), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
 
 
-def Rotate30(img, msk):
-    aug = A.Compose([Rotate(limit=(30, 30), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
+def rotate30(img, msk):
+    aug = A.Compose([A.Rotate(limit=(30, 30), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
 
 
-def Rotate60(img, msk):
-    aug = A.Compose([Rotate(limit=(60, 60), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
+def rotate60(img, msk):
+    aug = A.Compose([A.Rotate(limit=(60, 60), border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
 
 
-def Affine(img, msk, param):
+def affine(img, msk, param):
     aug = A.Compose([AffineTransform(param=param, border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
     data = aug(image=img, mask=msk)
     return data['image'], data['mask']
@@ -232,7 +233,8 @@ if __name__ == '__main__':
     # plt.figure()
     # plt.imshow(mask)
     # plt.show()
-    img_, msk_ = Affine(img, mask, [-32, 60, 230, -72, 500, 31])
+    # img_, msk_ = Affine(img, mask, [-32, 60, 230, -72, 500, 31])
+    img_, msk_ = affine(img, mask, [-0.01, 0.01, 0.1, -0.01, 0.01, 0.01])
     # img_ = F_affine(img, [0.1, 0.1, 1, 0.2, 0.2, 1])
     # img_, msk_ = Rotate45(img, mask)
     plt.figure()
@@ -241,3 +243,6 @@ if __name__ == '__main__':
     plt.figure()
     plt.imshow(msk_)
     plt.show()
+
+
+

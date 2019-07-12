@@ -4,10 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 
+
 def read_pkl(path):
     pkl_path = path.split('.')[0] + '.pkl'
     with open(pkl_path, 'rb') as f:
         return pickle.load(f)
+
 
 def visualize(image, keypoints, bboxes):
     overlay = image.copy()
@@ -22,10 +24,11 @@ def visualize(image, keypoints, bboxes):
 
     return overlay
 
+
 def Plot(data, is_dot=False):
     aug_image = data['image']
     if is_dot:
-            aug_image = visualize(aug_image, data['keypoints'], data['bboxes'])
+        aug_image = visualize(aug_image, data['keypoints'], data['bboxes'])
     aug_map = data['mask']
     plt.figure(figsize=(10, 10))
     plt.imshow(cv2.cvtColor(aug_image, cv2.COLOR_RGB2BGR))
@@ -70,7 +73,6 @@ def grid(img, num_steps_hori=3, num_steps_verti=3):
             cur = prev + y_step
         yy.append(cur)
         prev = cur
-    img_list = []
     mask = np.zeros(img.shape[:2])
     for idy in range(len(yy) - 1):
         for idx in range(len(xx) - 1):
@@ -81,17 +83,7 @@ def grid(img, num_steps_hori=3, num_steps_verti=3):
 
 
 if __name__ == '__main__':
-    path = '/home/edmund/projects/pics/1531053242.jpg'
+    path = 'IMG_319.jpg'
     image = cv2.imread(path)
-    img_list, mask = grid(image.copy(), num_steps_hori=4, num_steps_verti=3)
+    mask = grid(image.copy(), num_steps_hori=4, num_steps_verti=3)
     plt.figure(1)
-    plt.imshow(cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
-    plt.figure(2)
-    plt.imshow(cv2.cvtColor(img_list[1], cv2.COLOR_RGB2BGR))
-    plt.figure()
-    plt.imshow(cv2.cvtColor(img_list[2], cv2.COLOR_RGB2BGR))
-    plt.figure()
-    plt.imshow(cv2.cvtColor(img_list[7], cv2.COLOR_RGB2BGR))
-    plt.figure()
-    plt.imshow(mask)
-    plt.show()
