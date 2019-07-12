@@ -75,8 +75,8 @@ def grid(img, num_steps_hori=3, num_steps_verti=3):
     for idy in range(len(yy) - 1):
         for idx in range(len(xx) - 1):
             mask[yy[idy]: yy[idy+1], xx[idx]:xx[idx+1]] = idx + idy * num_steps_hori
-            img_list.append(img[yy[idy]: yy[idy+1], xx[idx]:xx[idx+1]])
-    return img_list, mask
+            # img_list.append(img[yy[idy]: yy[idy+1], xx[idx]:xx[idx+1]])
+    return mask
 
 
 if __name__ == '__main__':
