@@ -271,13 +271,13 @@ def random_gamma(img, msk):
 
 
 def rain(img, msk):
-    aug = A.Compose([A.RandomRain(always_apply=True, blur_value=1)])
+    aug = A.Compose([A.RandomRain(always_apply=True, blur_value=2)])
     data = aug(image=img)
     return data['image'], msk
 
 
 def snow(img, msk):
-    aug = A.Compose([A.RandomSnow(snow_point_lower=0.7, snow_point_upper=0.9, brightness_coeff= 1.3,
+    aug = A.Compose([A.RandomSnow(snow_point_lower=0.6, snow_point_upper=0.8, brightness_coeff=1.2,
                      always_apply=True)])
     data = aug(image=img)
     return data['image'], msk
@@ -290,16 +290,13 @@ def shadow(img, msk):
 
 
 def sun_flare(img, msk):
-    aug = A.Compose([A.RandomSunFlare(always_apply=True)])
+    aug = A.Compose([A.RandomSunFlare(always_apply=True, src_radius=100)])
     data = aug(image=img)
     return data['image'], msk
 
 
-
-
-
 if __name__ == '__main__':
-    path = "/home/edmund/桌面/projects/IMG_139.jpg"
+    path = "IMG_319.jpg"
     img = cv2.imread(path)
     mask = grid(img)
     # plt.figure()
@@ -307,12 +304,12 @@ if __name__ == '__main__':
     # plt.figure()
     # plt.imshow(mask)
     # plt.show()
-    img_, msk_ = affine_transform(img, mask)
+    img_, msk_ = rain(img, mask)
     # img_, msk_ = affine(img, mask)
-    plt.figure()
-    plt.imshow(cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
-    plt.figure()
-    plt.imshow(cv2.cvtColor(img_, cv2.COLOR_RGB2BGR))
+    # plt.figure()
+    # plt.imshow(cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+    # plt.figure()
+    # plt.imshow(cv2.cvtColor(img_, cv2.COLOR_RGB2BGR))
     # plt.savefig("/home/edmund/projects/snow2.jpg")
     # plt.figure()
     # plt.imshow(msk_)
@@ -320,6 +317,6 @@ if __name__ == '__main__':
     plt.show()
     # img_ = F_affine(img, [0.1, 0.1, 1, 0.2, 0.2, 1])
     # img_, msk_ = Rotate45(img, mask)
-    # cv2.imshow('img_', img_)
-    # cv2.imshow('img', img)
-    # cv2.waitKey()
+    cv2.imshow('img_', img_)
+    cv2.imshow('img', img)
+    cv2.waitKey()
