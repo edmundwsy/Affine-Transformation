@@ -8,7 +8,7 @@ import torch
 
 
 class TransformLoss(Module):
-    def __init__(self, use_fg, device):
+    def __init__(self, device):
         super(TransformLoss, self).__init__()
         self.device = device
 
