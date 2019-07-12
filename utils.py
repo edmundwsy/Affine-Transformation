@@ -89,7 +89,12 @@ def keypoint_affine(keypoint, param, rows, cols, **params):
     matrix = cv2.getAffineTransform(pts, dst)
     x, y, a, s = keypoint
     x, y = cv2.transform(np.array([[[x, y]]]), matrix).squeeze()
-    return [x, y, 0, 0]
+    x1 = s * math.cos(a)
+    y1 = s * math.sin(a)
+    x2, y2 = cv2.transform(np.array([[[x1, y1]]]), matrix).squeeze()
+    s_ = math.sqrt(x2 ** 2 + y2 ** 2)
+    a_ = math.atan2(y2, x2)
+    return [x, y, a_, s_]
 
 
 def affine(img, param=[0, 0, 0, 0, 0, 0], interpolation=cv2.INTER_LINEAR, border_mode=cv2.BORDER_CONSTANT):
@@ -181,7 +186,6 @@ class AffineTransform(DualTransform):
         return ('interpolation', 'border_mode')
 
 
-def Random_crop(img, msk, height=512, width=512):
 def random_crop(img, msk, height=512, width=512):
     aug = A.Compose([A.RandomCrop(height=height, width=width)])
     data = aug(image=img, mask=msk)
@@ -218,10 +222,34 @@ def rotate60(img, msk):
     return data['image'], data['mask']
 
 
-def affine(img, msk, param):
+def affine_transform(img, msk, points=[], param=[0,0,0,0,0,0]):
     aug = A.Compose([AffineTransform(param=param, border_mode=cv2.BORDER_CONSTANT, always_apply=True)])
-    data = aug(image=img, mask=msk)
-    return data['image'], data['mask']
+    data = aug(image=img, mask=msk, point=points)
+    return data['image'], data['mask'], data['point']
+
+
+def color_transform(img, msk):
+    aug = A.Compose([A.ChannelShuffle()])
+    data = aug(image=img)
+    return data['image'], msk
+
+
+def clahe(img, msk):
+    aug = A.Compose([A.CLAHE()])
+    data = aug(image=img)
+    return data['image'], msk
+
+
+def rgb_shift(img, msk):
+    aug = A.Compose([A.RGBShift()])
+    data = aug(image=img)
+    return data['image'], msk
+
+
+def hue_saturation_value(img, msk):
+    aug = A.Compose([A.HueSaturationValue()])
+    data = aug(image=img)
+    return data['image'], msk
 
 
 if __name__ == '__main__':
@@ -233,16 +261,14 @@ if __name__ == '__main__':
     # plt.figure()
     # plt.imshow(mask)
     # plt.show()
-    # img_, msk_ = Affine(img, mask, [-32, 60, 230, -72, 500, 31])
-    img_, msk_ = affine(img, mask, [-0.01, 0.01, 0.1, -0.01, 0.01, 0.01])
+    # img_, msk_ = affine_transform(img, mask, [-32, 60, 230, -72, 500, 31])
+    # img_, msk_ = affine(img, mask, [-0.01, 0.01, 0.1, -0.01, 0.01, 0.01])
     # img_ = F_affine(img, [0.1, 0.1, 1, 0.2, 0.2, 1])
     # img_, msk_ = Rotate45(img, mask)
+    img_, msk_ = hue_saturation_value(img, mask)
     plt.figure()
     plt.imshow(img_)
     # plt.imshow(cv2.cvtColor(img_, cv2.COLOR_RGB2BGR))
     plt.figure()
     plt.imshow(msk_)
     plt.show()
-
-
-

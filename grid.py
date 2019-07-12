@@ -11,25 +11,24 @@ def read_pkl(path):
         return pickle.load(f)
 
 
-def visualize(image, keypoints, bboxes):
+def visualize(image, keypoints, bboxes, is_box):
     overlay = image.copy()
     for kp in keypoints:
         cv2.circle(overlay, (int(kp[0]), int(kp[1])), 20, (0, 200, 200),
                    thickness=2,
                    lineType=cv2.LINE_AA)
-
-    for box in bboxes:
-        cv2.rectangle(overlay, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (200, 0, 0),
-                      thickness=2)
+    if is_box:
+        for box in bboxes:
+            cv2.rectangle(overlay, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (200, 0, 0),
+                          thickness=2)
 
     return overlay
 
 
-def Plot(data, is_dot=False):
-    aug_image = data['image']
-    if is_dot:
-        aug_image = visualize(aug_image, data['keypoints'], data['bboxes'])
-    aug_map = data['mask']
+def Plot(image, mask, keypoints, bboxes, is_dot=False):
+    aug_image = image
+    aug_image = visualize(aug_image, keypoints, bboxes, is_dot)
+    aug_map = mask
     plt.figure(figsize=(10, 10))
     plt.imshow(cv2.cvtColor(aug_image, cv2.COLOR_RGB2BGR))
     plt.figure(figsize=(10, 10))
