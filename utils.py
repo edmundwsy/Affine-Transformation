@@ -247,8 +247,53 @@ def hue_saturation_value(img, msk):
     return data['image'], msk
 
 
+def random_brightness(img, msk):
+    aug = A.Compose([A.RandomBrightnessContrast(always_apply=True)])
+    data = aug(image=img)
+    return data['image'], msk
+
+
+def blur(img, msk):
+    aug = A.Compose([A.Blur(always_apply=True)])
+    data = aug(image=img)
+    return data['image'], msk
+
+
+def random_gamma(img, msk):
+    aug = A.Compose([A.RandomGamma(always_apply=True)])
+    data = aug(image=img)
+    return data['image'], msk
+
+
+def rain(img, msk):
+    aug = A.Compose([A.RandomRain(always_apply=True)])
+    data = aug(image=img)
+    return data['image'], msk
+
+
+def snow(img, msk):
+    aug = A.Compose([A.RandomSnow(always_apply=True)])
+    data = aug(image=img)
+    return data['image'], msk
+
+
+def shadow(img, msk):
+    aug = A.Compose([A.RandomShadow(always_apply=True)])
+    data = aug(image=img)
+    return data['image'], msk
+
+
+def sun_flare(img, msk):
+    aug = A.Compose([A.RandomSunFlare(always_apply=True)])
+    data = aug(image=img)
+    return data['image'], msk
+
+
+
+
+
 if __name__ == '__main__':
-    path = "IMG_319.jpg"
+    path = '/home/edmund/projects/pics/1531053242.jpg'
     img = cv2.imread(path)
     mask = grid(img)
     # plt.figure()
@@ -258,9 +303,16 @@ if __name__ == '__main__':
     # plt.show()
     # img_, msk_ = Affine(img, mask, [-32, 60, 230, -72, 500, 31])
     # img_, msk_ = affine(img, mask, [-0.01, 0.01, 0.1, -0.01, 0.01, 0.01])
-    img_, msk_ = rotate30(img, mask)
+    img_, msk_ = shadow(img, mask)
+    plt.figure()
+    plt.imshow(cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+    plt.figure()
+    plt.imshow(cv2.cvtColor(img_, cv2.COLOR_RGB2BGR))
+    plt.figure()
+    plt.imshow(mask)
+    plt.show()
     # img_ = F_affine(img, [0.1, 0.1, 1, 0.2, 0.2, 1])
     # img_, msk_ = Rotate45(img, mask)
-    cv2.imshow('img_', img_)
-    cv2.imshow('img', img)
-    cv2.waitKey()
+    # cv2.imshow('img_', img_)
+    # cv2.imshow('img', img)
+    # cv2.waitKey()
